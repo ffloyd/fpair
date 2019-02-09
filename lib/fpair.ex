@@ -1,18 +1,5 @@
 defmodule Fpair do
   @moduledoc """
-  Documentation for Fpair.
+  Code folder sync tool for remote pair programming.
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Fpair.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end
