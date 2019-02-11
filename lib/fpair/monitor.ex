@@ -5,11 +5,22 @@ defmodule Fpair.Monitor do
 
   alias Fpair.Monitor.Worker
 
+  @typedoc """
+  Message types.
+
+  We need only two message types:
+
+  * change file -> `:modified`
+  * create file -> `:modified` too
+  * delete file -> `:removed`
+  * rename file -> `:removed` on source path and `:modified` on destination path
+  * and we don't care about tracking modification times and so on
+  """
   @type message_type :: :modified | :removed
   @type message :: {message_type(), Path.t()}
 
   @doc """
-  Subscribe to events. Events are GenServer casts with format described by `t:message/0`.
+  Subscribe to events. Events are `GenServer` casts with format described by `t:message/0`.
   """
   def subscribe do
     GenServer.call(Worker, {:subscribe, self()})

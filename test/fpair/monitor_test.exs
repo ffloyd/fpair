@@ -10,6 +10,10 @@ defmodule Fpair.MonitorTest do
     if File.exists?(folder), do: File.rm_rf!(folder)
     File.mkdir!(folder)
 
+    on_exit fn ->
+      File.rm_rf!(folder)
+    end
+
     start_supervised!({Worker, folder: folder, osx_latency: 0})
 
     # it's a dirty trick, but we need wait for fsevent to warup
@@ -18,14 +22,18 @@ defmodule Fpair.MonitorTest do
     %{folder: folder}
   end
 
-  describe "subscribe/0" do
+  describe "subscribe/0 and events" do
     setup do
       :ok = Monitor.subscribe()
+
+      on_exit fn ->
+        :ok = Monitor.unsubscribe()
+      end
 
       :ok
     end
 
-    test "sends {:modified, path} to subscriber on file creation", %{folder: folder} do
+    test "create file", %{folder: folder} do
       file = Path.expand("test_create", folder)
 
       File.touch!(file)
@@ -33,7 +41,7 @@ defmodule Fpair.MonitorTest do
       assert_receive {:"$gen_cast", {:modified, ^file}}
     end
 
-    test "sends {:removed, path} to subscriber on file deletion", %{folder: folder} do
+    test "create and delete file", %{folder: folder} do
       file = Path.expand("test_delete", folder)
 
       File.touch!(file)
@@ -43,7 +51,7 @@ defmodule Fpair.MonitorTest do
       assert_receive {:"$gen_cast", {:removed, ^file}}
     end
 
-    test "sends {:modified, path} to subscriber on file rename", %{folder: folder} do
+    test "create and move file", %{folder: folder} do
       file = Path.expand("test_move_src", folder)
       file_moved = Path.expand("test_move_dst", folder)
 
