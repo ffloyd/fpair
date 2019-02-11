@@ -11,14 +11,14 @@ defmodule Fpair.Monitor do
   @doc """
   Subscribe to events. Events are GenServer casts with format described by `t:message/0`.
   """
-  def subscribe() do
+  def subscribe do
     GenServer.call(Worker, {:subscribe, self()})
   end
 
   @doc """
   Unsubscribe from events.
   """
-  def unsubscribe() do
+  def unsubscribe do
     GenServer.call(Worker, {:unsubscribe, self()})
   end
 end

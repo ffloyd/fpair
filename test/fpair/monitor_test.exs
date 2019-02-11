@@ -12,7 +12,7 @@ defmodule Fpair.MonitorTest do
 
     start_supervised!({Worker, folder: folder, osx_latency: 0})
 
-    # it's a dirty trick, but we need wait for fsevent to warup 
+    # it's a dirty trick, but we need wait for fsevent to warup
     Process.sleep(500)
 
     %{folder: folder}

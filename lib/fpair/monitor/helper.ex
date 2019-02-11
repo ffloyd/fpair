@@ -19,7 +19,7 @@ defmodule Fpair.Monitor.Helper do
     events
     |> Enum.reverse()
     |> Enum.reduce([], fn event, acc ->
-      case transform_event(event, path) do 
+      case transform_event(event, path) do
         nil -> acc
         msg -> [msg | acc]
       end

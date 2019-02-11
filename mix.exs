@@ -30,8 +30,9 @@ defmodule Fpair.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:file_system, "~> 0.2"},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:file_system, "~> 0.2"}
+      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false}
     ]
   end
 end
