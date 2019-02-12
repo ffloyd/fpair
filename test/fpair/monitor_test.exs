@@ -34,29 +34,34 @@ defmodule Fpair.MonitorTest do
     end
 
     test "create file", %{folder: folder} do
-      file = Path.expand("test_create", folder)
+      file = "test_create"
+      path = Path.expand(file, folder)
 
-      File.touch!(file)
+      File.touch!(path)
 
       assert_receive {:"$gen_cast", {:modified, ^file}}
     end
 
     test "create and delete file", %{folder: folder} do
-      file = Path.expand("test_delete", folder)
+      file = "test_delete"
+      path = Path.expand(file, folder)
 
-      File.touch!(file)
-      File.rm!(file)
+      File.touch!(path)
+      File.rm!(path)
 
       assert_receive {:"$gen_cast", {:modified, ^file}}
       assert_receive {:"$gen_cast", {:removed, ^file}}
     end
 
     test "create and move file", %{folder: folder} do
-      file = Path.expand("test_move_src", folder)
-      file_moved = Path.expand("test_move_dst", folder)
+      file = "test_move_src"
+      path = Path.expand(file, folder)
 
-      File.touch!(file)
-      File.rename(file, file_moved)
+      file_moved = "test_move_dst"
+      path_moved = Path.expand(file_moved, folder)
+
+      File.touch!(path)
+      File.rename(path, path_moved)
 
       assert_receive {:"$gen_cast", {:modified, ^file}}
       assert_receive {:"$gen_cast", {:removed, ^file}}

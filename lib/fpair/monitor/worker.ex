@@ -5,7 +5,7 @@ defmodule Fpair.Monitor.Worker do
 
   use GenServer
 
-  import Fpair.Monitor.EventTransform, only: [transform_events: 2]
+  import Fpair.Monitor.EventTransform, only: [transform_events: 3]
 
   require Logger
 
@@ -31,7 +31,7 @@ defmodule Fpair.Monitor.Worker do
     {:ok, fs} = FileSystem.start_link(dirs: [folder], latency: osx_latency)
     :ok = FileSystem.subscribe(fs)
 
-    {:ok, %{fs: fs, subscribers: []}}
+    {:ok, %{folder: folder, fs: fs, subscribers: []}}
   end
 
   def handle_call({:subscribe, pid}, _form, state = %{subscribers: subscribers}) do
@@ -50,9 +50,9 @@ defmodule Fpair.Monitor.Worker do
     }
   end
 
-  def handle_info({:file_event, fs, {path, events}}, state = %{fs: fs, subscribers: subscribers}) do
-    path
-    |> transform_events(events)
+  def handle_info({:file_event, fs, {path, events}}, state = %{folder: folder, fs: fs, subscribers: subscribers}) do
+    folder
+    |> transform_events(path, events)
     |> Enum.each(&cast_all(subscribers, &1))
 
     {:noreply, state}

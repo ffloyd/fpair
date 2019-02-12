@@ -5,30 +5,30 @@ defmodule Fpair.Monitor.EventTransformTest do
 
   doctest EventTransform
 
-  describe "transform_event/2" do
+  describe "transform_events/3" do
     test "`:modified` transformation" do
-      assert {:modified, "/path"} =
-        EventTransform.transform_event(:modified, "/path")
+      assert [{:modified, "path"}] ==
+        EventTransform.transform_events("/", "path", [:modified])
     end
 
     test "`:created` transformation" do
-      assert {:modified, "/path"} =
-        EventTransform.transform_event(:created, "/path")
+      assert [{:modified, "path"}] ==
+        EventTransform.transform_events("/", "path", [:created])
     end
 
     test "`:removed` transformation" do
-      assert {:removed, "/path"} =
-        EventTransform.transform_event(:removed, "/path")
+      assert [{:removed, "path"}] ==
+        EventTransform.transform_events("/", "path", [:removed])
     end
 
     test "`:renamed` transformation when file exists after emmiting event" do
-      assert {:modified, "."} =
-        EventTransform.transform_event(:renamed, ".")
+      assert [{:modified, "."}] ==
+        EventTransform.transform_events("/", ".", [:renamed])
     end
 
     test "`:renamed` transformation when file doesn't exist after emmiting event" do
-      assert {:removed, "/impossible_dir"} =
-        EventTransform.transform_event(:renamed, "/impossible_dir")
+      assert [{:removed, "impossible_dir"}] ==
+        EventTransform.transform_events("/", "impossible_dir", [:renamed])
     end
   end
 end

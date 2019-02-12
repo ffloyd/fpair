@@ -17,6 +17,10 @@ defmodule Fpair.Monitor do
   * and we don't care about tracking modification times and so on
   """
   @type message_type :: :modified | :removed
+
+  @typedoc """
+  Important note: path inside message should be relative to folder root.
+  """
   @type message :: {message_type(), Path.t()}
 
   @doc """

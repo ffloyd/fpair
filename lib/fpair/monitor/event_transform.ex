@@ -8,42 +8,39 @@ defmodule Fpair.Monitor.EventTransform do
 
   Examples:
 
-      iex> Fpair.Monitor.EventTransform.transform_events("/tmp/a", [:modified])
-      [{:modified, "/tmp/a"}]
+      iex> Fpair.Monitor.EventTransform.transform_events("/", "tmp/a", [:modified])
+      [{:modified, "tmp/a"}]
 
-      iex> Fpair.Monitor.EventTransform.transform_events("/tmp/a", [:created, :inodemetamod, :removed])
-      [{:modified, "/tmp/a"}, {:removed, "/tmp/a"}]
+      iex> Fpair.Monitor.EventTransform.transform_events("/", "tmp/a", [:created, :inodemetamod, :removed])
+      [{:modified, "tmp/a"}, {:removed, "tmp/a"}]
   """
-  @spec transform_events(Path.t(), [atom()]) :: [Fpair.Monitor.message]
-  def transform_events(path, events) do
+  @spec transform_events(Path.t(), Path.t(), [atom()]) :: [Fpair.Monitor.message]
+  def transform_events(folder, path, events) do
     events
     |> Enum.reverse()
     |> Enum.reduce([], fn event, acc ->
-      case transform_event(event, path) do
+      case transform_event(folder, event, path) do
         nil -> acc
         msg -> [msg | acc]
       end
     end)
   end
 
-  @doc """
-  Transform `FileSystem` event for given `path` into `t:Fpair.Monitor.message/0`.
-  Returns `nil` if event doesn't produce message.
-  """
-  @spec transform_event(atom(), Path.t()) :: Fpair.Monitor.message() | nil
-  def transform_event(fs_event, path)
+  defp transform_event(folder, fs_event, path)
 
-  def transform_event(:modified, path), do: {:modified, path}
-  def transform_event(:created, path), do: {:modified, path}
-  def transform_event(:removed, path), do: {:removed, path}
+  defp transform_event(folder, :modified, path), do: {:modified, path |> Path.relative_to(folder)}
+  defp transform_event(folder, :created, path), do: {:modified, path |> Path.relative_to(folder)}
+  defp transform_event(folder, :removed, path), do: {:removed, path |> Path.relative_to(folder)}
 
-  def transform_event(:renamed, path) do
-    if File.exists?(path) do
-      {:modified, path}
+  defp transform_event(folder, :renamed, path) do
+    type = if File.exists?(path) do
+      :modified
     else
-      {:removed, path}
+      :removed
     end
+
+    {type, path |> Path.relative_to(folder)}
   end
 
-  def transform_event(_, _), do: nil
+  defp transform_event(_, _, _), do: nil
 end
