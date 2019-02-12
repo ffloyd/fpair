@@ -5,7 +5,7 @@ defmodule Fpair.Monitor.Worker do
 
   use GenServer
 
-  alias Fpair.Monitor.Helper
+  import Fpair.Monitor.EventTransform, only: [transform_events: 2]
 
   require Logger
 
@@ -35,16 +35,24 @@ defmodule Fpair.Monitor.Worker do
   end
 
   def handle_call({:subscribe, pid}, _form, state = %{subscribers: subscribers}) do
-    {:reply, :ok, %{state | subscribers: [pid | subscribers]}}
+    {
+      :reply,
+      :ok,
+      %{state | subscribers: [pid | subscribers]}
+    }
   end
 
   def handle_call({:unsubscribe, pid}, _form, state = %{subscribers: subscribers}) do
-    {:reply, :ok, %{state | subscribers: subscribers |> List.delete(pid)}}
+    {
+      :reply,
+      :ok,
+      %{state | subscribers: subscribers |> List.delete(pid)}
+    }
   end
 
   def handle_info({:file_event, fs, {path, events}}, state = %{fs: fs, subscribers: subscribers}) do
     path
-    |> Helper.transform_events(events)
+    |> transform_events(events)
     |> Enum.each(&cast_all(subscribers, &1))
 
     {:noreply, state}

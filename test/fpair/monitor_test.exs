@@ -22,7 +22,7 @@ defmodule Fpair.MonitorTest do
     %{folder: folder}
   end
 
-  describe "subscribe/0 and events" do
+  describe "subscribtion and events" do
     setup do
       :ok = Monitor.subscribe()
 

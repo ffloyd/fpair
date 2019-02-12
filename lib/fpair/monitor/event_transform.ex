@@ -1,17 +1,17 @@
-defmodule Fpair.Monitor.Helper do
+defmodule Fpair.Monitor.EventTransform do
   @moduledoc """
-  Helper functions for `Fpair.Monitor.Worker`.
+  Transformation from `FileSystem` events to simplified internal ones.
   """
 
   @doc """
-  Transforms `FileSystem` events to monitor messages.
+  Transforms `FileSystem` events to `t:Fpair.Monitor.message/0`.
 
   Examples:
 
-      iex> Fpair.Monitor.Helper.transform_events("/tmp/a", [:modified])
+      iex> Fpair.Monitor.EventTransform.transform_events("/tmp/a", [:modified])
       [{:modified, "/tmp/a"}]
 
-      iex> Fpair.Monitor.Helper.transform_events("/tmp/a", [:created, :inodemetamod, :removed])
+      iex> Fpair.Monitor.EventTransform.transform_events("/tmp/a", [:created, :inodemetamod, :removed])
       [{:modified, "/tmp/a"}, {:removed, "/tmp/a"}]
   """
   @spec transform_events(Path.t(), [atom()]) :: [Fpair.Monitor.message]
@@ -27,7 +27,7 @@ defmodule Fpair.Monitor.Helper do
   end
 
   @doc """
-  Transform `fs_event` for given `path` into `t:Fpair.Monitor.message/0`.
+  Transform `FileSystem` event for given `path` into `t:Fpair.Monitor.message/0`.
   Returns `nil` if event doesn't produce message.
   """
   @spec transform_event(atom(), Path.t()) :: Fpair.Monitor.message() | nil
