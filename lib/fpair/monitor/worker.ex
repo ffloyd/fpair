@@ -50,7 +50,10 @@ defmodule Fpair.Monitor.Worker do
     }
   end
 
-  def handle_info({:file_event, fs, {path, events}}, state = %{folder: folder, fs: fs, subscribers: subscribers}) do
+  def handle_info(
+        {:file_event, fs, {path, events}},
+        state = %{folder: folder, fs: fs, subscribers: subscribers}
+      ) do
     folder
     |> transform_events(path, events)
     |> Enum.each(&cast_all(subscribers, &1))

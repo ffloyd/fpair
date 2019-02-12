@@ -14,7 +14,7 @@ defmodule Fpair.Monitor.EventTransform do
       iex> Fpair.Monitor.EventTransform.transform_events("/", "tmp/a", [:created, :inodemetamod, :removed])
       [{:modified, "tmp/a"}, {:removed, "tmp/a"}]
   """
-  @spec transform_events(Path.t(), Path.t(), [atom()]) :: [Fpair.Monitor.message]
+  @spec transform_events(Path.t(), Path.t(), [atom()]) :: [Fpair.Monitor.message()]
   def transform_events(folder, path, events) do
     events
     |> Enum.reverse()
@@ -33,11 +33,12 @@ defmodule Fpair.Monitor.EventTransform do
   defp transform_event(folder, :removed, path), do: {:removed, path |> Path.relative_to(folder)}
 
   defp transform_event(folder, :renamed, path) do
-    type = if File.exists?(path) do
-      :modified
-    else
-      :removed
-    end
+    type =
+      if File.exists?(path) do
+        :modified
+      else
+        :removed
+      end
 
     {type, path |> Path.relative_to(folder)}
   end

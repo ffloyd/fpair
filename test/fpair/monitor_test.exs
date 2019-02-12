@@ -10,9 +10,9 @@ defmodule Fpair.MonitorTest do
     if File.exists?(folder), do: File.rm_rf!(folder)
     File.mkdir!(folder)
 
-    on_exit fn ->
+    on_exit(fn ->
       File.rm_rf!(folder)
-    end
+    end)
 
     start_supervised!({Worker, folder: folder, osx_latency: 0})
 
@@ -26,9 +26,9 @@ defmodule Fpair.MonitorTest do
     setup do
       :ok = Monitor.subscribe()
 
-      on_exit fn ->
+      on_exit(fn ->
         :ok = Monitor.unsubscribe()
-      end
+      end)
 
       :ok
     end
